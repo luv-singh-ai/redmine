@@ -1,0 +1,38 @@
+version: '3'
+services:
+  redmine:
+    image: redmine:5.0
+    ports:
+      - "3000:3000"
+    environment:
+      - REDMINE_DB_MYSQL=db
+      - REDMINE_DB_PASSWORD=redmine_pwd
+      - REDMINE_SECRET_KEY_BASE=codespaces_secret_key
+    depends_on:
+      - db
+    volumes:
+      - redmine-files:/usr/src/redmine/files
+    networks:
+      - redmine-network
+    restart: unless-stopped
+
+  db:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_pwd
+      - MYSQL_DATABASE=redmine
+      - MYSQL_USER=redmine
+      - MYSQL_PASSWORD=redmine_pwd
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - redmine-network
+    restart: unless-stopped
+
+volumes:
+  mysql-data:
+  redmine-files:
+
+networks:
+  redmine-network:
+    driver: bridge
